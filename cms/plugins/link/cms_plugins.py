@@ -1,6 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.sites.models import Site
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from cms.plugin_pool import plugin_pool
 from cms.plugin_base import CMSPluginBase
 from cms.plugins.link.forms import LinkForm
@@ -17,7 +18,12 @@ class LinkPlugin(CMSPluginBase):
         if instance.mailto:
             link = u"mailto:%s" % settings.dbgettext(instance.mailto)
         elif instance.url:
-            link = settings.dbgettext(instance.url)
+            #import pdb;pdb.set_trace()
+            if instance.url[:8] == "reverse:":
+                name = instance.url[8:].strip()
+                link = reverse(name)
+            else:
+                link = settings.dbgettext(instance.url)
         elif instance.page_link:
             link = instance.page_link.get_absolute_url()
         else:
